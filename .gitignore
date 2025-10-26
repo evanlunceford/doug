@@ -1,3 +1,4 @@
 .env
 credentials.json
 token.json
+/src/backend/database/*.db

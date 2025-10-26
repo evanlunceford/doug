@@ -11,13 +11,13 @@ SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 def _get_oauth_service():
     creds = None
     # token.json stores the user’s access/refresh tokens
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    if os.path.exists("../../token.json"):
+        creds = Credentials.from_authorized_user_file("../../token.json", SCOPES)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file("../../credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
         with open("token.json", "w") as f:
             f.write(creds.to_json())

@@ -2,8 +2,8 @@ import sqlite3
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 
-CONTEXT_DB_PATH = "context.db"
-TASKS_DB_PATH = "tasks.db"
+CONTEXT_DB_PATH = "./database/context.db"
+TASKS_DB_PATH = "./database/tasks.db"
 
 
 
@@ -303,8 +303,6 @@ def delete_task(task_id: str, db_path: str = TASKS_DB_PATH) -> bool:
 
 
 # SYNC HISTORY FUNCTIONS
-
-
 def log_sync(
     sync_type: str,
     tasks_created: int = 0,
@@ -351,8 +349,6 @@ def get_last_sync(sync_type: str, db_path: str = TASKS_DB_PATH) -> Optional[Dict
 
 
 # UTILITY FUNCTIONS
-
-
 def cleanup_old_tasks(days: int = 30, db_path: str = TASKS_DB_PATH) -> int:
     """Delete completed tasks older than specified days."""
     conn = sqlite3.connect(db_path)
@@ -408,8 +404,6 @@ def get_task_stats(db_path: str = TASKS_DB_PATH) -> Dict[str, int]:
 
 
 # INITIALIZATION
-
-
 def initialize_databases():
     """Initialize all databases."""
     print("Creating databases...")
