@@ -1,0 +1,221 @@
+:root{
+    /* PRIMARY COLORS */
+    --darkBlue: #283044;
+    --grey: #211C1C;
+    --lightGrey: #EBF5EE;
+    --gold: #D7AE33;
+
+    /* SECONDARY COLORS */
+    --darkBlueSecondary: #1E2433;
+    --greySecondary: #0B0909;
+    --lightGreySecondary: #dae3dd;
+    --goldSecondary: #BB9625;
+
+    /* BRIGHT COLORS */
+    --darkBlueBright: #3C4867;
+    --greyBright: #433737;
+    --lightGreyBright: #FFFFFF;
+    --goldBright: #DDBB55;
+
+    /* BORDER CONSTANTS */
+    --smallBorder: 8px;
+    --mediumBorder: 12px;
+    --largeBorder: 16px;
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: var(--darkBlue);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+:root.sidebar-collapsed .sidebar {
+  width: 70px;
+}
+
+:root.sidebar-collapsed .sidebar-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+:root.sidebar-collapsed .sidebar-logo-text {
+  opacity: 0;
+  width: 0;
+}
+
+:root.sidebar-collapsed .open-icon {
+  display: none;
+}
+
+:root.sidebar-collapsed .closed-icon {
+  display: inline;
+}
+
+:root:not(.sidebar-collapsed) .open-icon {
+  display: inline;
+}
+
+:root:not(.sidebar-collapsed) .closed-icon {
+  display: none;
+}
+:root.sidebar-collapsed .sidebar-logo-btn {
+  display: none;
+}
+
+:root.sidebar-collapsed .sidebar-header{
+  justify-content: center;
+}
+
+/* Header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1rem;
+  border-bottom: 2px solid var(--darkBlueSecondary);
+  min-height: 70px;
+}
+
+.sidebar-logo-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: var(--lightGreyBright);
+  font-size: 1.25rem;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.sidebar-logo-btn:hover {
+  color: var(--gold);
+}
+
+.sidebar-logo-text {
+  white-space: nowrap;
+  transition: opacity 0.3s ease, width 0.3s ease;
+}
+
+.sidebar-toggle-btn {
+  background-color: var(--darkBlueBright);
+  border: none;
+  border-radius: var(--smallBorder);
+  color: var(--lightGreyBright);
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.sidebar-icon{
+    width: 30px;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: var(--gold);
+}
+
+/* Menu */
+.sidebar-menu {
+  list-style: none;
+  padding: 1rem 0;
+  margin: 0;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.sidebar-item {
+  margin: 0.75rem 0;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: var(--lightGrey);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  border-radius: 0;
+}
+
+.sidebar-link:hover {
+  background-color: var(--darkBlueBright);
+  color: var(--lightGreyBright);
+}
+
+.sidebar-link:active,
+.sidebar-link.active {
+  background-color: var(--gold);
+  color: var(--darkBlue);
+}
+
+.sidebar-icon {
+  font-size: 1.5rem;
+  min-width: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-text {
+  font-size: 1rem;
+  white-space: nowrap;
+  transition: opacity 0.3s ease, width 0.3s ease;
+  overflow: hidden;
+}
+
+/* Footer */
+.sidebar-footer {
+  border-top: 2px solid var(--darkBlueSecondary);
+  padding: 1rem;
+  background-color: var(--darkBlueSecondary);
+}
+
+.sidebar-footer-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--lightGrey);
+  font-size: 0.875rem;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background: var(--darkBlueSecondary);
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: var(--darkBlueBright);
+  border-radius: var(--smallBorder);
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}

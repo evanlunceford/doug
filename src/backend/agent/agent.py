@@ -6,10 +6,10 @@ from typing import List, Dict, Any
 import dspy
 from dotenv import load_dotenv
 
-from services.canvas import CanvasAPI
-from services.todoist import TodoistAPI
-from services.googleCalendar import list_events_for_days
-from database.sqlite import store_task
+from src.backend.services.canvas import CanvasService
+from src.backend.services.todoist import TodoistAPI
+from src.backend.services.googleCalendar import list_events_for_days
+from src.backend.database.sqlite import store_task
 
 load_dotenv()
 
@@ -61,16 +61,31 @@ class AssignmentAnalysisSig(dspy.Signature):
         "Otherwise output ''"
     ))
 
+class ProjectTaskAnalysisSig(dspy.Signature):
+    project_name = dspy.InputField(desc="Name of project needing analysis")
+    project_description = dspy.InputField(desc="Quick overview of the project")
+    query = dspy.InputField(desc="Overview of user's tasks for the week")
+
+    tasks = dspy.OutputField(
+        desc=(
+            "Return a list of tasks. Each task must be formatted exactly as: "
+            "'{duration} - {task description} - {project name}'. "
+            "Use hours, or minutes if under one hour. "
+            "Example: '2 hours - Implement pathway transitions/design choices - SCOUT'. "
+            "Return the tasks as an array of strings."
+        ),
+        type=list
+    )
+
 
 class TaskScheduler:    
     def __init__(self):
-        self.canvas_api = CanvasAPI()
+        self.canvas_api = CanvasService()
         self.todoist_api = TodoistAPI()
         self.tz = ZoneInfo(TIMEZONE)
         self.summarize_name = dspy.Predict(AssignmentSummarizerSig)
         self.assignment_analyzer = dspy.Predict(AssignmentAnalysisSig)
-        # Track slots assigned during this run
-        self.assigned_slots = {}  # {date_key: [(hour, duration_minutes), ...]}
+        self.assigned_slots = {}
         
     def get_next_week_data(self) -> Dict[str, Any]:
         print("Fetching Canvas assignments...")

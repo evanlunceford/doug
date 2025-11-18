@@ -1,9 +1,16 @@
 import sqlite3
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
+from pathlib import Path
 
-CONTEXT_DB_PATH = "./database/context.db"
-TASKS_DB_PATH = "./database/tasks.db"
+
+BASE_DIR = Path(__file__).resolve().parent
+DATABASE_DIR = BASE_DIR / "database"
+
+CONTEXT_DB_PATH = DATABASE_DIR / "context.db"
+CANVAS_DB_PATH = DATABASE_DIR / "canvas.db"
+TASKS_DB_PATH = DATABASE_DIR / "tasks.db"
+PROJECTS_DB_PATH = DATABASE_DIR / "projects.db"
 
 
 
@@ -83,11 +90,133 @@ def create_tasks_db():
 
     conn.commit()
     conn.close()
+    
+
+
+def create_projects_db():
+    conn = sqlite3.connect(PROJECTS_DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS projects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL UNIQUE,
+            description TEXT,
+            tech_stack TEXT,
+            weekly_hours INTEGER DEFAULT 0
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+#PROJECT FUNCTIONS
+def add_project(title: str, description: str, tech_stack: str, weekly_hours: int) -> None:
+    """
+    Insert a new project into the projects table.
+
+    Raises sqlite3.IntegrityError if a project with the same title already exists.
+    """
+    conn = sqlite3.connect(PROJECTS_DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO projects (title, description, tech_stack, weekly_hours)
+            VALUES (?, ?, ?, ?)
+            """,
+            (title, description, tech_stack, int(weekly_hours)),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def update_project_value(title: str, column: str, value: Any) -> int:
+    """
+    Update a single column for a project identified by its title.
+
+    Parameters:
+        title (str): The project title (acts as a unique key).
+        column (str): One of 'title', 'description', 'tech_stack', 'weekly_hours'.
+        value (Any): New value to set.
+
+    Returns:
+        int: Number of rows updated (0 if no project with that title).
+    """
+    allowed_columns = {"title", "description", "tech_stack", "weekly_hours"}
+    if column not in allowed_columns:
+        raise ValueError(f"Invalid column name: {column}")
+
+    if column == "weekly_hours":
+        value = int(value)
+
+    conn = sqlite3.connect(PROJECTS_DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute(
+            f"UPDATE projects SET {column} = ? WHERE title = ?",
+            (value, title),
+        )
+        conn.commit()
+        return cursor.rowcount
+    finally:
+        conn.close()
+
+def get_project_by_title(title: str) -> dict | None:
+    conn = sqlite3.connect(PROJECTS_DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT id, title, description, tech_stack, weekly_hours FROM projects WHERE title = ?",
+            (title,),
+        )
+        row = cursor.fetchone()
+    finally:
+        conn.close()
+
+    if not row:
+        return None
+
+    return {
+        "id": row[0],
+        "title": row[1],
+        "description": row[2],
+        "tech_stack": row[3],
+        "weekly_hours": row[4],
+    }
+
+def delete_project(title: str) -> int:
+    """
+    Delete a project from the database by its title.
+
+    Parameters:
+        title (str): Title of the project to delete.
+
+    Returns:
+        int: Number of rows deleted (0 if no matching project).
+    """
+    conn = sqlite3.connect(PROJECTS_DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "DELETE FROM projects WHERE title = ?",
+            (title,),
+        )
+        conn.commit()
+        return cursor.rowcount
+    finally:
+        conn.close()
+
 
 
 
 # CONTEXT FUNCTIONS
-
 
 def get_recent_context(hours: int = 24) -> str:
     """Get recent conversation context."""
@@ -134,7 +263,6 @@ def add_context(user_question: str, agent_response: str):
 
 
 # TASK FUNCTIONS
-
 
 def store_task(task: Dict[str, Any], db_path: str = TASKS_DB_PATH) -> bool:
     """Store or update a task in the database."""
