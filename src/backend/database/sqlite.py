@@ -3,14 +3,16 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 
-
 BASE_DIR = Path(__file__).resolve().parent
-DATABASE_DIR = BASE_DIR / "database"
 
-CONTEXT_DB_PATH = DATABASE_DIR / "context.db"
-CANVAS_DB_PATH = DATABASE_DIR / "canvas.db"
-TASKS_DB_PATH = DATABASE_DIR / "tasks.db"
+DATABASE_DIR = BASE_DIR / "database_files"
+DATABASE_DIR.mkdir(parents=True, exist_ok=True)
+
+CONTEXT_DB_PATH  = DATABASE_DIR / "context.db"
+CANVAS_DB_PATH   = DATABASE_DIR / "canvas.db"
+TASKS_DB_PATH    = DATABASE_DIR / "tasks.db"
 PROJECTS_DB_PATH = DATABASE_DIR / "projects.db"
+
 
 
 
@@ -112,7 +114,7 @@ def create_projects_db():
 
 
 #PROJECT FUNCTIONS
-def add_project(title: str, description: str, tech_stack: str, weekly_hours: int) -> None:
+def add_project(title: str, description: str, tech_stack: str, weekly_hours: int) -> bool:
     """
     Insert a new project into the projects table.
 
@@ -166,6 +168,31 @@ def update_project_value(title: str, column: str, value: Any) -> int:
         return cursor.rowcount
     finally:
         conn.close()
+
+
+def get_all_projects() -> list[dict]:
+    conn = sqlite3.connect(PROJECTS_DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT id, title, description, tech_stack, weekly_hours FROM projects"
+        )
+        rows = cursor.fetchall()
+    finally:
+        conn.close()
+
+    projects = []
+    for row in rows:
+        projects.append({
+            "id": row[0],
+            "title": row[1],
+            "description": row[2],
+            "tech_stack": row[3],
+            "weekly_hours": row[4],
+        })
+
+    return projects
+
 
 def get_project_by_title(title: str) -> dict | None:
     conn = sqlite3.connect(PROJECTS_DB_PATH)

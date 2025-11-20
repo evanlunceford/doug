@@ -6,9 +6,11 @@ from typing import Any, Dict
 from dotenv import load_dotenv
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Response
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.backend.routers import canvas_api
 from src.backend.routers import todoist_api
+from src.backend.routers import projects_api
 load_dotenv()
 
 logging.basicConfig(
@@ -26,12 +28,27 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+origins = [
+    "http://localhost:1420",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app.include_router(
     canvas_api.router
 )
 app.include_router(
     todoist_api.router
+)
+app.include_router(
+    projects_api.router
 )
 
 

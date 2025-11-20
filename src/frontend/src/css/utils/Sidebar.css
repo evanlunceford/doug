@@ -1,28 +1,3 @@
-:root{
-    /* PRIMARY COLORS */
-    --darkBlue: #283044;
-    --grey: #211C1C;
-    --lightGrey: #EBF5EE;
-    --gold: #D7AE33;
-
-    /* SECONDARY COLORS */
-    --darkBlueSecondary: #1E2433;
-    --greySecondary: #0B0909;
-    --lightGreySecondary: #dae3dd;
-    --goldSecondary: #BB9625;
-
-    /* BRIGHT COLORS */
-    --darkBlueBright: #3C4867;
-    --greyBright: #433737;
-    --lightGreyBright: #FFFFFF;
-    --goldBright: #DDBB55;
-
-    /* BORDER CONSTANTS */
-    --smallBorder: 8px;
-    --mediumBorder: 12px;
-    --largeBorder: 16px;
-}
-
 .sidebar {
   position: fixed;
   left: 0;

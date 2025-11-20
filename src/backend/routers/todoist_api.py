@@ -1,11 +1,22 @@
 from calendar import week
+
+from pydantic import BaseModel
+from sqlalchemy import desc
 from src.backend.agent.agent import TaskScheduler
+from src.backend.database.sqlite import add_project
 from fastapi import APIRouter, Request, HTTPException
 import os
 from dotenv import load_dotenv
 import traceback
 
 load_dotenv()
+
+#REQUEST MODELS
+class AddProjectRequest(BaseModel):
+    title: str
+    description: str
+    tech_stack: str
+    weekly_hours: str
 
 
 router = APIRouter(
@@ -37,6 +48,29 @@ def run_weekly_sync():
             status_code=500,
             detail=f"Failed to sync weekly tasks: {str(e)}"
         )
+    
+@router.post("/add-project")
+def add_project(request: AddProjectRequest):
+    try:
+        title = request.title
+        description = request.description
+        tech_stack = request.tech_stack
+        weekly_hours = request.weekly_hours
+
+
+        project_added = add_project(title, description, tech_stack, weekly_hours)
+
+        if not project_added:
+            return HTTPException(status_code=500, detail="Failed to add project to database.")
+        
+        return {
+            "success": True,
+            "project": project_added
+        }
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+    
 
     
 
